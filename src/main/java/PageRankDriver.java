@@ -55,7 +55,7 @@ public class PageRankDriver {
             return job.waitForCompletion(true);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("runGraphBuilder³ö´í£¡");
+            System.out.println("runGraphBuilderå‡ºé”™ï¼");
         } catch (InterruptedException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -81,7 +81,7 @@ public class PageRankDriver {
             return job.waitForCompletion(true);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("runPageRankIter³ö´í£¡");
+            System.out.println("runPageRankIterå‡ºé”™ï¼");
         } catch (InterruptedException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -107,7 +107,7 @@ public class PageRankDriver {
             return job.waitForCompletion(true);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("runRankViewer³ö´í£¡");
+            System.out.println("runRankViewerå‡ºé”™ï¼");
         } catch (InterruptedException | ClassNotFoundException e) {
             e.printStackTrace();
         }

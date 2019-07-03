@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 /**
- * Ê×ÏÈÄ¬ÈÏdÎª0.85
+ * é¦–å…ˆé»˜è®¤dä¸º0.85
  */
 public class PagePankIterReducer extends Reducer<Text, Text, Text, Text> {
     private static final double d = 0.85;
@@ -14,7 +14,7 @@ public class PagePankIterReducer extends Reducer<Text, Text, Text, Text> {
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        // todo ´Óconfiguration»ñÈ¡½ÚµãÊıN
+        // todo ä»configurationè·å–èŠ‚ç‚¹æ•°N
         N = 4;
     }
 

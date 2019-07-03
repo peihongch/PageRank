@@ -8,11 +8,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ÊäÈë£º
- * µÒÔÆ [Æİ·¼,0.33333|Æİ³¤·¢,0.333333|²·Ô«,0.333333]
- * Æİ·¼ [µÒÔÆ,0.25 |Æİ³¤·¢,0.25|²·Ô«,0.5]
- * Æİ³¤·¢ [µÒÔÆ,0.33333|Æİ·¼,0.333333|²·Ô«,0.333333]
- * ²·Ô« [µÒÔÆ,0.25|Æİ·¼,0.5|Æİ³¤·¢,0.25]
+ * è¾“å…¥ï¼š
+ * ç‹„äº‘ [æˆšèŠ³,0.33333|æˆšé•¿å‘,0.333333|åœå£,0.333333]
+ * æˆšèŠ³ [ç‹„äº‘,0.25 |æˆšé•¿å‘,0.25|åœå£,0.5]
+ * æˆšé•¿å‘ [ç‹„äº‘,0.33333|æˆšèŠ³,0.333333|åœå£,0.333333]
+ * åœå£ [ç‹„äº‘,0.25|æˆšèŠ³,0.5|æˆšé•¿å‘,0.25]
  */
 public class GraphBuilderMapper extends Mapper<Object, Text, Text, Text> {
     @Override
@@ -22,7 +22,7 @@ public class GraphBuilderMapper extends Mapper<Object, Text, Text, Text> {
         while (matcher.find()) {
             String a = matcher.group(1);
             String b = matcher.group(2);
-            // Ä¬ÈÏ³õÊ¼PRÊÇ0.5
+            // é»˜è®¤åˆå§‹PRæ˜¯0.5
             context.write(new Text(a),
                     new Text("0.5-" + b));
         }
@@ -30,7 +30,7 @@ public class GraphBuilderMapper extends Mapper<Object, Text, Text, Text> {
 
     public static void main(String[] args) {
         Pattern pattern = Pattern.compile("(\\S+)\\s\\[(.+)\\]");
-        Matcher matcher = pattern.matcher("µÒÔÆ [Æİ·¼,0.33333|Æİ³¤·¢,0.333333|²·Ô«,0.333333]");
+        Matcher matcher = pattern.matcher("ç‹„äº‘ [æˆšèŠ³,0.33333|æˆšé•¿å‘,0.333333|åœå£,0.333333]");
         while (matcher.find()) {
             String a = matcher.group(1);
             String b = matcher.group(2);

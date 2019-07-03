@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ¸ù¾İÈ¨ÖØ¸ø²»Í¬µÄÁ´½Ó½Úµã·ÖÅäPRÖµ
+ * æ ¹æ®æƒé‡ç»™ä¸åŒçš„é“¾æ¥èŠ‚ç‚¹åˆ†é…PRå€¼
  */
 public class PagePankIterMapper extends Mapper<Text, Text, Text, Text> {
     @Override
@@ -26,7 +26,7 @@ public class PagePankIterMapper extends Mapper<Text, Text, Text, Text> {
                     context.write(new Text(matcher.group(1)), new Text("" + curRank * Double.parseDouble(matcher.group(2))));
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
-                    System.out.println("Êä³öPRÖµ³ö´í£¡");
+                    System.out.println("è¾“å‡ºPRå€¼å‡ºé”™ï¼");
                 }
             }
         });
@@ -34,7 +34,7 @@ public class PagePankIterMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     public static void main(String[] args) {
-        String[] splits = "0.5-Æİ·¼,0.33333|Æİ³¤·¢,0.333333|²·Ô«,0.333333".split("-");
+        String[] splits = "0.5-æˆšèŠ³,0.33333|æˆšé•¿å‘,0.333333|åœå£,0.333333".split("-");
         double curRank = Double.parseDouble(splits[0]);
         List<String> linkList = Arrays.asList(splits[1].split("\\|"));
         linkList.forEach(link -> {
