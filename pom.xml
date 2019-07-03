@@ -6,7 +6,11 @@
 
     <groupId>com.hadoop</groupId>
     <artifactId>PageRank</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>LabelPropagation</module>
+    </modules>
 
     <properties>
         <hadoop.version>2.7.1</hadoop.version>
