@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * value:
@@ -22,9 +24,13 @@ public class LabelPropagationReducer extends Reducer<Text, Text, Text, Text> {
             // 替换标签
             List<String> newLinks = new ArrayList<>();
             Arrays.asList(links.toString().split("[;]")).forEach(link -> {
-                String[] splits = link.split("[:,]");
-                String newTag = conf.get(splits[0]);
-                newLinks.add(splits[0] + ":" + newTag + "," + splits[2]);
+//                String[] splits = link.split("[:,]");
+                Pattern p = Pattern.compile("(\\S+)[:](\\S+)[,](\\S+)");
+                Matcher m = p.matcher(link);
+                while (m.find()) {
+                    String newTag = conf.get(m.group(1));
+                    newLinks.add(m.group(1) + ":" + newTag + "," + m.group(3));
+                }
             });
 
             // 拼接成新的链接
