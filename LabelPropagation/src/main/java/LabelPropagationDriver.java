@@ -17,11 +17,11 @@ public class LabelPropagationDriver {
         String input = args[0];
         String output = args[1];
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 3; i++) {
                 if (i != 0) {
                     input = args[1] + "/Data" + i;
                 }
-                if (i != 9)
+                if (i != 2)
                     output = args[1] + "/Data" + (i + 1);
                 else
                     output = args[1] + "/DataFinal";

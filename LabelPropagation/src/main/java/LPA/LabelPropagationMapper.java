@@ -3,6 +3,8 @@ package LPA;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,24 +22,36 @@ import java.util.regex.Pattern;
  * 然后从中选取权重最高的作为人物的标签。此时我们得到了一系列<人物:标签>，将其作为输出返回给Reduce
  */
 public class LabelPropagationMapper extends Mapper<Object, Text, Text, Text> {
+    private Logger logger;
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        logger = LoggerFactory.getLogger(LabelPropagationMapper.class);
+    }
+
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         String name = "", links = "";
 
-        Pattern pattern = Pattern.compile("(\\S+)[:](\\S+)\\|(\\S+)");
+        logger.info("value: " + value.toString());
+        Pattern pattern = Pattern.compile("(\\S+)\\|(\\S+)");
         Matcher matcher = pattern.matcher(value.toString());
+        logger.info("start finding...");
         while (matcher.find()) {
             name = matcher.group(1);
             links = matcher.group(2);
         }
+        logger.info("end finding...");
+        logger.info("nameAndTag: " + name);
+        logger.info("links: " + links);
+        name = name.split("[:]")[0];
         context.write(new Text(name), new Text(links));
 
         Configuration conf = context.getConfiguration();
         // 累计标签的权重
         Hashtable<String, Double> tagWeightTable = new Hashtable<>();
         Arrays.asList(links.split("[;]")).forEach(link -> {
-//            String[] splits = link.split("[:,]");
-            Pattern p = Pattern.compile("(\\S+)[:](\\S+)[,](\\S+)");
+            Pattern p = Pattern.compile("(\\S+):(\\S+)[,](\\S+)");
             Matcher m = p.matcher(link);
             while (m.find()) {
                 Double weight = tagWeightTable.get(m.group(2));
@@ -48,6 +62,7 @@ public class LabelPropagationMapper extends Mapper<Object, Text, Text, Text> {
                 }
             }
         });
+
         // 寻找权重最大的标签
         Iterator iterator = tagWeightTable.keySet().iterator();
         String maxLabel = "";
@@ -60,7 +75,25 @@ public class LabelPropagationMapper extends Mapper<Object, Text, Text, Text> {
                 maxLabel = label;
             }
         }
+
+        logger.info("==================================================================");
+        logger.info("start setConf...");
+        logger.info("name: " + name);
+        logger.info("label: " + maxLabel);
         // 将更新后的标签写入Configuration以便全部的Reducer都能够访问
         conf.set(name, maxLabel);
+        logger.info("get label from conf: " + conf.get(name));
+        logger.info("end setConf...");
+    }
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("(\\S+):(\\S+)\\|(\\S+)");
+        Matcher matcher = pattern.matcher("人物:标签|有关人物1:标签1,权重1;有关人物2:标签2,权重2");
+        Logger logger = LoggerFactory.getLogger(LabelPropagationMapper.class);
+        logger.info("start finding...");
+        while (matcher.find()) {
+            System.out.println(matcher.group(1));
+            System.out.println(matcher.group(3));
+        }
     }
 }
