@@ -1,5 +1,7 @@
 import CalculateNewLabel.CalculateNewLabelMapper;
 import CalculateNewLabel.CalculateNewLabelReducer;
+import PreProcessing.PreProcessingMapper;
+import PreProcessing.PreProcessingReducer;
 import UpdateLabel.UpdateLabelMapper;
 import UpdateLabel.UpdateLabelReducer;
 import org.apache.hadoop.conf.Configuration;
@@ -23,10 +25,11 @@ public class DistributedLPADriver {
     private static Logger logger = LoggerFactory.getLogger(DistributedLPADriver.class);
 
     public static void main(String[] args) {
-        int iter = args.length>2? Integer.parseInt(args[2]) :10;
+        int iter = args.length > 2 ? Integer.parseInt(args[2]) : 10;
+        Configuration conf = new Configuration();
+        if (!runPreProcessing(conf, args[0], args[1]+"/PreProcessing")) return;
         for (int i = 0; i < iter; i++) {
-            Configuration conf = new Configuration();
-            String input = i == 0 ? args[0] : args[1] + "/DataUpdate" + (i-1);
+            String input = i == 0 ? args[1]+"/PreProcessing" : args[1] + "/DataUpdate" + (i - 1);
             if (runCalculateNewLabel(conf, input, args[1] + "/DataCal" + i)) {
                 try {
                     DistributedCache.addCacheFile(new URI(args[1] + "/DataCal" + i + "/part-r-00000"), conf);
@@ -41,6 +44,29 @@ public class DistributedLPADriver {
                 }
             }
         }
+    }
+
+    private static boolean runPreProcessing(Configuration conf, String input, String output) {
+        Job job;
+        try {
+            job = Job.getInstance(conf);
+            FileSystem fileSystem = FileSystem.get(conf);
+            job.setJobName("LabelPropagation");
+
+            job.setJarByClass(DistributedLPADriver.class);
+            job.setMapperClass(PreProcessingMapper.class);
+            job.setReducerClass(PreProcessingReducer.class);
+            job.setMapOutputKeyClass(Text.class);
+            job.setMapOutputValueClass(Text.class);
+
+            job.setInputFormatClass(TextInputFormat.class);
+            job.setOutputFormatClass(TextOutputFormat.class);
+
+            return setInputAndOutput(input, output, job, fileSystem);
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private static boolean runCalculateNewLabel(Configuration conf, String input, String output) {
