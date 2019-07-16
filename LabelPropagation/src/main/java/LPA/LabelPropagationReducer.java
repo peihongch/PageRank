@@ -34,7 +34,7 @@ public class LabelPropagationReducer extends Reducer<Text, Text, Text, Text> {
             logger.info("value: " + links.toString());
             // 替换标签
             List<String> newLinks = new ArrayList<>();
-            Arrays.asList(links.toString().split("[;]")).forEach(link -> {
+            for (String link:links.toString().split("[;]")){
                 logger.info("links after split...");
                 logger.info("link: " + link);
                 Pattern p = Pattern.compile("(\\S+)[,](\\S+)");
@@ -46,19 +46,37 @@ public class LabelPropagationReducer extends Reducer<Text, Text, Text, Text> {
                     String newTag = conf.get(name);
                     newLinks.add(name + ":" + newTag + "," + m.group(2));
                 }
-            });
+            }
+//            Arrays.asList(links.toString().split("[;]")).forEach(link -> {
+//                logger.info("links after split...");
+//                logger.info("link: " + link);
+//                Pattern p = Pattern.compile("(\\S+)[,](\\S+)");
+//                Matcher m = p.matcher(link);
+//                while (m.find()) {
+//                    logger.info("nameAndTag: " + m.group(1));
+//                    logger.info("weight: " + m.group(2));
+//                    String name = m.group(1).split(":")[0];
+//                    String newTag = conf.get(name);
+//                    newLinks.add(name + ":" + newTag + "," + m.group(2));
+//                }
+//            });
             logger.info("==================================================");
             logger.info("newLinks: ");
             for (String s : newLinks) logger.info(s);
             logger.info("==================================================");
 
             // 拼接成新的链接
-            String value = newLinks.stream().reduce((link1, link2) -> link1 + ";" + link2).orElse("");
+//            String value = newLinks.stream().reduce((link1, link2) -> link1 + ";" + link2).orElse("");
+            StringBuilder value = new StringBuilder();
+            for (int i = 0; i < newLinks.size(); i++) {
+                value.append(newLinks.get(i));
+                if (i!=newLinks.size()-1)value.append(";");
+            }
             logger.info("拼接成新的链接 newLinks: " + value);
 
             String nameAndTag = key.toString();
             nameAndTag = nameAndTag + ":" + conf.get(nameAndTag);
-            context.write(new Text(nameAndTag), new Text(value));
+            context.write(new Text(nameAndTag), new Text(value.toString()));
         }
     }
 }

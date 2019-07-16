@@ -50,7 +50,7 @@ public class LabelPropagationMapper extends Mapper<Object, Text, Text, Text> {
         Configuration conf = context.getConfiguration();
         // 累计标签的权重
         Hashtable<String, Double> tagWeightTable = new Hashtable<>();
-        Arrays.asList(links.split("[;]")).forEach(link -> {
+        for (String link:links.split("[;]")){
             Pattern p = Pattern.compile("(\\S+):(\\S+)[,](\\S+)");
             Matcher m = p.matcher(link);
             while (m.find()) {
@@ -61,7 +61,19 @@ public class LabelPropagationMapper extends Mapper<Object, Text, Text, Text> {
                     tagWeightTable.put(m.group(2), weight + Double.parseDouble(m.group(3)));
                 }
             }
-        });
+        }
+//        Arrays.asList(links.split("[;]")).forEach(link -> {
+//            Pattern p = Pattern.compile("(\\S+):(\\S+)[,](\\S+)");
+//            Matcher m = p.matcher(link);
+//            while (m.find()) {
+//                Double weight = tagWeightTable.get(m.group(2));
+//                if (weight == null) {
+//                    tagWeightTable.put(m.group(2), Double.parseDouble(m.group(3)));
+//                } else {
+//                    tagWeightTable.put(m.group(2), weight + Double.parseDouble(m.group(3)));
+//                }
+//            }
+//        });
 
         // 寻找权重最大的标签
         Iterator iterator = tagWeightTable.keySet().iterator();

@@ -27,15 +27,4 @@ public class GraphBuilderMapper extends Mapper<Object, Text, Text, Text> {
                     new Text("0.5-" + b));
         }
     }
-
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("(\\S+)\\s\\[(.+)\\]");
-        Matcher matcher = pattern.matcher("狄云 [戚芳,0.33333|戚长发,0.333333|卜垣,0.333333]");
-        while (matcher.find()) {
-            String a = matcher.group(1);
-            String b = matcher.group(2);
-            System.out.println(a);
-            System.out.println(b);
-        }
-    }
 }

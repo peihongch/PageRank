@@ -23,7 +23,8 @@ public class DistributedLPADriver {
     private static Logger logger = LoggerFactory.getLogger(DistributedLPADriver.class);
 
     public static void main(String[] args) {
-        for (int i = 0; i < 3; i++) {
+        int iter = args.length>2? Integer.parseInt(args[2]) :10;
+        for (int i = 0; i < iter; i++) {
             Configuration conf = new Configuration();
             String input = i == 0 ? args[0] : args[1] + "/DataUpdate" + (i-1);
             if (runCalculateNewLabel(conf, input, args[1] + "/DataCal" + i)) {
@@ -92,7 +93,8 @@ public class DistributedLPADriver {
         return false;
     }
 
-    private static boolean setInputAndOutput(String input, String output, Job job, FileSystem fileSystem) throws IOException, InterruptedException, ClassNotFoundException {
+    private static boolean setInputAndOutput(String input, String output, Job job, FileSystem fileSystem)
+            throws IOException, InterruptedException, ClassNotFoundException {
         Path inPath = new Path(input);
         FileInputFormat.addInputPath(job, inPath);
 

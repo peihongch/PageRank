@@ -1,7 +1,7 @@
 import GraphBuilder.GraphBuilderMapper;
 import GraphBuilder.GraphBuilderReducer;
-import PageRankIter.PagePankIterMapper;
-import PageRankIter.PagePankIterReducer;
+import PageRankIter.PageRankIterMapper;
+import PageRankIter.PageRankIterReducer;
 import RankViewer.RankViewerMapper;
 import RankViewer.RankViewerReducer;
 import org.apache.hadoop.conf.Configuration;
@@ -20,12 +20,14 @@ import java.io.IOException;
 public class PageRankDriver {
     public static void main(String[] args) {
         Configuration configuration = new Configuration();
-        configuration.setDouble("d", 0.85);
-        configuration.setInt("N", 4);
+        int iter = args.length > 2 ? Integer.parseInt(args[2]) : 10;
+        if (args.length > 3)
+            configuration.setDouble("d", Double.parseDouble(args[3]));
+
         if (runGraphBuilder(configuration, args[0], args[1] + "/Data0")) {
             boolean flag = true;
             int i = 0;
-            for (; i < 10; i++) {
+            for (; i < iter; i++) {
                 if (!runPageRankIter(configuration, args[1] + "/Data" + i, args[1] + "/Data" + (i + 1))) {
                     flag = false;
                 }
@@ -69,8 +71,8 @@ public class PageRankDriver {
             job.setJobName("PageRankIter");
 
             job.setJarByClass(PageRankDriver.class);
-            job.setMapperClass(PagePankIterMapper.class);
-            job.setReducerClass(PagePankIterReducer.class);
+            job.setMapperClass(PageRankIterMapper.class);
+            job.setReducerClass(PageRankIterReducer.class);
             job.setMapOutputKeyClass(Text.class);
             job.setMapOutputValueClass(Text.class);
 
@@ -114,7 +116,8 @@ public class PageRankDriver {
         return false;
     }
 
-    private static void setInputAndOutput(String input, String output, Job job, FileSystem fileSystem) throws IOException {
+    private static void setInputAndOutput(String input, String output, Job job, FileSystem fileSystem)
+            throws IOException {
         Path inPath = new Path(input);
         FileInputFormat.addInputPath(job, inPath);
 

@@ -59,7 +59,7 @@ public class UpdateLabelMapper extends Mapper<Object, Text, Text, Text> {
 
         // 替换标签
         List<String> newLinks = new ArrayList<>();
-        Arrays.asList(links.split("[;]")).forEach(link -> {
+        for (String link:links.split("[;]")){
             logger.info("links after split...");
             logger.info("link: " + link);
             Pattern p = Pattern.compile("(\\S+)[,](\\S+)");
@@ -71,17 +71,35 @@ public class UpdateLabelMapper extends Mapper<Object, Text, Text, Text> {
                 String newTag = newTags.get(n);
                 newLinks.add(n + ":" + newTag + "," + m.group(2));
             }
-        });
+        }
+//        Arrays.asList(links.split("[;]")).forEach(link -> {
+//            logger.info("links after split...");
+//            logger.info("link: " + link);
+//            Pattern p = Pattern.compile("(\\S+)[,](\\S+)");
+//            Matcher m = p.matcher(link);
+//            while (m.find()) {
+//                logger.info("nameAndTag: " + m.group(1));
+//                logger.info("weight: " + m.group(2));
+//                String n = m.group(1).split(":")[0];
+//                String newTag = newTags.get(n);
+//                newLinks.add(n + ":" + newTag + "," + m.group(2));
+//            }
+//        });
         logger.info("==================================================");
         logger.info("newLinks: ");
         for (String s : newLinks) logger.info(s);
         logger.info("==================================================");
 
         // 拼接成新的链接
-        String v = newLinks.stream().reduce((link1, link2) -> link1 + ";" + link2).orElse("");
+//        String v = newLinks.stream().reduce((link1, link2) -> link1 + ";" + link2).orElse("");
+        StringBuilder v = new StringBuilder();
+        for (int i = 0; i < newLinks.size(); i++) {
+            v.append(newLinks.get(i));
+            if (i!=newLinks.size()-1) v.append(";");
+        }
         logger.info("拼接成新的链接 newLinks: " + v);
 
         String nameAndTag = name + ":" + newTags.get(name);
-        context.write(new Text(nameAndTag), new Text(v));
+        context.write(new Text(nameAndTag), new Text(v.toString()));
     }
 }
